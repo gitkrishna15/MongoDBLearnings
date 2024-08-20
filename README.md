@@ -11,12 +11,22 @@ MongoDB Community  : The source-available, free-to-use, and self-managed version
 **Document Database**
 A record in MongoDB is a document, which is a data structure composed of field and value pairs. MongoDB documents are similar to JSON objects. The values of fields may include other documents, arrays, and arrays of documents.
 
+MongoDB stores data records as documents (specifically BSON documents) which are gathered together in collections. A database stores one or more collections of documents.
+
 The advantages of using documents are:
   Documents correspond to native data types in many programming languages.
   Embedded documents and arrays reduce need for expensive joins.
   Dynamic schema supports fluent polymorphism.
 
 MongoDB stores documents in collections. Collections are analogous to tables in relational databases.
+
+Select a Database: 
+    use <myDB>
+Create Database:
+    use <myNewDB>    -- myNewDB is non-existent and is created when you create insert document
+Create Collection:
+    db.myNewCollection1.insertOne( { x: 1 } )
+
 
 
 **Time Series Collections**
@@ -112,5 +122,36 @@ In addition to collections, MongoDB provides two different view types: standard 
     By default, bulkWrite() performs ordered operations. To specify unordered write operations, set ordered : false in the options document.
     In MongoDB, update operations target a single collection. All write operations in MongoDB are atomic on the level of a single document.
 
-    Data Aggregation
-    Text Search and Geospatial Queries.
+**CRUD Concepts**
+  **Atomicity**
+    In MongoDB, a write operation is atomic on the level of a single document, even if the operation modifies multiple embedded documents within a single document.
+
+  **Multi-Document Transactions**
+    When a single write operation (e.g. db.collection.updateMany()) modifies multiple documents, the modification of each document is atomic, but the operation as a whole is not atomic.
+    When performing multi-document write operations, whether through a single write operation or multiple write operations, other operations may interleave.
+    For situations that require atomicity of reads and writes to multiple documents (in a single or multiple collections), MongoDB supports distributed transactions, including transactions on replica sets and sharded clusters.
+
+  **Concurrency Control**
+    Concurrency control allows multiple applications to run concurrently without causing data inconsistency or conflicts.
+    A findAndModify operation on a document is atomic: if the find condition matches a document, the update is performed on that document. Concurrent queries and additional updates on that document are not affected until the current update is complete.
+
+  **Distributed Queries**
+    **Read Operations to Replica Sets**
+      By default, clients reads from a replica set's primary; however, clients can specify a read preference to direct read operations to other members. For example, clients can configure read preferences to read from secondaries or from nearest member to:
+      reduce latency in multi-data-center deployments, 
+      improve read throughput by distributing high read-volumes (relative to write volume), 
+      perform backup operations, 
+      and/or allow reads until a new primary is elected.     
+  **Write Operations on Replica Sets**
+      In replica sets, all write operations go to the set's primary. The primary applies the write operation and records the operations on the primary's operation log or oplog. The oplog is a reproducible sequence of operations to the data set. secondary members of the set continuously replicate the oplog and apply the operations to themselves in an asynchronous process.
+  **Read Operations to Sharded Clusters**
+    Sharded clusters allow you to partition a data set among a cluster of mongod instances in a way that is nearly transparent to the application.
+    Read operations on sharded clusters are most efficient when directed to a specific shard. Queries to sharded collections should include the collection's shard key. When a query includes a shard key, the mongos can use cluster metadata from the config database to route the queries to shards.
+  **Write Operations on Sharded Clusters**
+    For sharded collections in a sharded cluster, the mongos directs write operations from applications to the shards that are responsible for the specific portion of the data set. The mongos uses the cluster metadata from the config database to route the write operation to the appropriate shards.
+    
+
+
+
+Data Aggregation
+Text Search and Geospatial Queries.
