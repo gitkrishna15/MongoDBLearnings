@@ -20,6 +20,8 @@ The advantages of using documents are:
 
 MongoDB stores documents in collections. Collections are analogous to tables in relational databases.
 
+BSON is a binary serialization format used to store documents and make remote procedure calls in MongoDB. 
+
 Select a Database: 
     use <myDB>
 Create Database:
@@ -142,16 +144,27 @@ In addition to collections, MongoDB provides two different view types: standard 
       improve read throughput by distributing high read-volumes (relative to write volume), 
       perform backup operations, 
       and/or allow reads until a new primary is elected.     
-  **Write Operations on Replica Sets**
+    **Write Operations on Replica Sets**
       In replica sets, all write operations go to the set's primary. The primary applies the write operation and records the operations on the primary's operation log or oplog. The oplog is a reproducible sequence of operations to the data set. secondary members of the set continuously replicate the oplog and apply the operations to themselves in an asynchronous process.
-  **Read Operations to Sharded Clusters**
-    Sharded clusters allow you to partition a data set among a cluster of mongod instances in a way that is nearly transparent to the application.
-    Read operations on sharded clusters are most efficient when directed to a specific shard. Queries to sharded collections should include the collection's shard key. When a query includes a shard key, the mongos can use cluster metadata from the config database to route the queries to shards.
-  **Write Operations on Sharded Clusters**
-    For sharded collections in a sharded cluster, the mongos directs write operations from applications to the shards that are responsible for the specific portion of the data set. The mongos uses the cluster metadata from the config database to route the write operation to the appropriate shards.
+    **Read Operations to Sharded Clusters**
+      Sharded clusters allow you to partition a data set among a cluster of mongod instances in a way that is nearly transparent to the application.
+      Read operations on sharded clusters are most efficient when directed to a specific shard. Queries to sharded collections should include the collection's shard key. When a query includes a shard key, the mongos can use cluster metadata from the config database to route the queries to shards.
+    **Write Operations on Sharded Clusters**
+      For sharded collections in a sharded cluster, the mongos directs write operations from applications to the shards that are responsible for the specific portion of the data set. The mongos uses the cluster metadata from the config database to route the write operation to the appropriate shards.
+
+
     
 
 
 
 Data Aggregation
+
+Aggregation Pipeline
+An aggregation pipeline consists of one or more stages that process documents:
+Each stage performs an operation on the input documents. For example, a stage can filter documents, group documents, and calculate values.
+The documents that are output from a stage are passed to the next stage.
+An aggregation pipeline can return results for groups of documents. For example, return the total, average, maximum, and minimum values.
+You can update documents with an aggregation pipeline if you use the stages shown in Updates with Aggregation Pipeline.
+
+
 Text Search and Geospatial Queries.
